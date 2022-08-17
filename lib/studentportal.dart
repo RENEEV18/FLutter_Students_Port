@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:student_port/db/functions/db_functions.dart';
+import 'package:student_port/list_student.dart';
 import 'package:student_port/student_details.dart';
 
 class StudentPortal extends StatelessWidget {
@@ -7,8 +9,9 @@ class StudentPortal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    getAllStudents();
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 7, 18, 54),
+       backgroundColor: const Color.fromARGB(255, 239, 239, 241),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(builder: (ctx){
@@ -30,7 +33,7 @@ class StudentPortal extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  icon: Icon(Icons.arrow_back_ios)),
+                  icon: const Icon(Icons.arrow_back_ios)),
             ),
             const CircleAvatar(
               backgroundImage: NetworkImage(
@@ -128,7 +131,49 @@ class StudentPortal extends StatelessWidget {
       ),
       appBar: AppBar(
         title: Text('Dashboard', style: GoogleFonts.acme()),
+        backgroundColor: const Color.fromARGB(255, 239, 239, 241),
       ),
+
+     body:  SafeArea(child:  SingleChildScrollView(
+      physics: const ScrollPhysics(),
+       child: Column(
+         children: [
+        
+          SizedBox(
+            height: 120,
+      
+            child: Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundImage: NetworkImage('https://lebschoolportal.stellarshell.com/App_Assets/img/student.png'),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text('Welcome ',style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        
+                      ),),
+                      Text('To Students Portal',style: TextStyle(
+                        fontWeight: FontWeight.bold
+                      ),),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+           const ListStudent(),
+         ],
+       ),
+     )),
     );
   }
 

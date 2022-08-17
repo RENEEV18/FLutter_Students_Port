@@ -39,14 +39,14 @@ class _SplashScreenState extends State<SplashScreen> {
           const SizedBox(
             height: 40,
           ),
-          LoadingAnimationWidget.inkDrop(color: Colors.blue, size: 30),
+          LoadingAnimationWidget.waveDots(color: Colors.blueAccent, size: 30),
         ],
       ),
     );
   }
 
   Future<void> studentport() async {
-    await Future.delayed(const Duration(seconds: 30));
+    await Future.delayed(const Duration(seconds: 15));
     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) {
       return const StudentPortal();
     }));
