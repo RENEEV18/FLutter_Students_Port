@@ -1,23 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:student_port/studentportal.dart';
+import 'package:student_port/providers/student_provider.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends StatelessWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    studentport();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    StudentProvider().timerSplash(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -43,12 +33,5 @@ class _SplashScreenState extends State<SplashScreen> {
         ],
       ),
     );
-  }
-
-  Future<void> studentport() async {
-    await Future.delayed(const Duration(seconds: 15));
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) {
-      return const StudentPortal();
-    }));
   }
 }
