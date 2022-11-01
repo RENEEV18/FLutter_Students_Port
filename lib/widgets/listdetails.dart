@@ -6,8 +6,8 @@ class ListDetails extends StatelessWidget {
     required this.controller,
     required this.text,
     required this.icons,
-    
-    this.formValidator, required this.keyboardType,
+    this.formValidator,
+    required this.keyboardType,
   });
 
   final TextEditingController controller;
@@ -24,7 +24,7 @@ class ListDetails extends StatelessWidget {
       ),
       child: TextFormField(
         validator: formValidator,
-        keyboardType:keyboardType,
+        keyboardType: keyboardType,
         controller: controller,
         style: const TextStyle(fontSize: 20, color: Colors.black),
         decoration: InputDecoration(

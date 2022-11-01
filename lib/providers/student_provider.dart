@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -13,7 +12,7 @@ class StudentProvider extends ChangeNotifier {
   List<StudentModel> dataFound = [];
   File? image;
   bool imageVisible = false;
-  List<StudentModel> filterSearch = StudentDb.studentList ;
+  List<StudentModel> filterSearch = StudentDb.studentList;
 
   timerSplash(BuildContext context) {
     Timer(
@@ -26,9 +25,8 @@ class StudentProvider extends ChangeNotifier {
     );
   }
 
-
-  Future<void> getAllData(context)async{
-    final students = await StudentDb.getAllStudents(context);
+  Future<void> getAllData(context) async {
+    final students = await StudentDb.getAllStudents();
     dataFound = students;
     notifyListeners();
   }
@@ -56,8 +54,8 @@ class StudentProvider extends ChangeNotifier {
     dataFound = results;
     notifyListeners();
   }
- 
-    Future<void> getimage() async {
+
+  Future<void> getimage() async {
     final pikImage = await ImagePicker().pickImage(
       source: ImageSource.gallery,
     );
@@ -71,7 +69,7 @@ class StudentProvider extends ChangeNotifier {
     }
   }
 
-    void isVisible(img) {
+  void isVisible(img) {
     if (img == null) {
       imageVisible = true;
     } else {
@@ -81,12 +79,10 @@ class StudentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-  Future <void>  deleteData(String id , context)async{
-    if(id.isEmpty){
+  Future<void> deleteData(String id, context) async {
+    if (id.isEmpty) {
       log('No id');
-    }
-    else{
+    } else {
       await StudentDb.deleteStudent(context, id);
       log('deleted successfully');
     }

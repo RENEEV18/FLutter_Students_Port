@@ -1,4 +1,0 @@
-enum Actiontype{
-  addStudentScreen,
-  editScreen,
-}

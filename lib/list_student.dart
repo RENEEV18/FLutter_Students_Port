@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_port/db/functions/db_functions.dart';
 import 'package:student_port/details.dart';
 import 'package:student_port/providers/student_provider.dart';
 
@@ -24,11 +23,13 @@ class ListStudent extends StatelessWidget {
                   final data = value.dataFound[index];
                   return ListTile(
                     title: Text(data.name),
-                    leading:  CircleAvatar(
-                        // backgroundImage: FileImage(
-                        //   File(data.photo),
-                        // ),
-                        ),
+                    leading: Consumer(
+                      builder: (context, StudentProvider value, child) {
+                        return CircleAvatar(
+                            radius: 25,
+                            backgroundImage: FileImage(File(data.photo)));
+                      },
+                    ),
                     trailing: IconButton(
                       onPressed: () {
                         onPressedDelete(
@@ -36,7 +37,7 @@ class ListStudent extends StatelessWidget {
                           data.id,
                         );
                       },
-                      icon: const Icon(Icons.delete),
+                      icon: const Icon(Icons.delete_sweep),
                       color: const Color.fromARGB(255, 8, 8, 8),
                     ),
                     onTap: () {
@@ -44,13 +45,13 @@ class ListStudent extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) {
                             return Details(
-                              // id: data.id,
-                              // index:index ,
+                              id: data.id,
+                              index: index,
                               name: data.name,
                               age: data.age,
-                              email:data. email,
-                             // photo:data. photo,
-                              phone:data.phonenumber,
+                              email: data.email,
+                              photo: data.photo,
+                              phone: data.phonenumber,
                             );
                           },
                         ),
@@ -59,7 +60,9 @@ class ListStudent extends StatelessWidget {
                   );
                 },
                 separatorBuilder: (context, index) {
-                  return const SizedBox();
+                  return const SizedBox(
+                    height: 5,
+                  );
                 },
                 itemCount: value.dataFound.length,
               );
@@ -81,10 +84,17 @@ void onPressedDelete(BuildContext context, String index) {
               Provider.of<StudentProvider>(context, listen: false).deleteData(
                 index,
                 context,
-                
               );
-              Provider.of<StudentProvider>(context, listen: false).getAllData(context);
-              
+              Provider.of<StudentProvider>(context, listen: false)
+                  .getAllData(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Successfully delted !'),
+                  behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 2),
+                  backgroundColor: Colors.blue,
+                ),
+              );
               Navigator.of(context).pop();
             },
             child: const Text('Ok'),

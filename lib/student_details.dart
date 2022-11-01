@@ -1,11 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:student_port/core/constants.dart';
 import 'package:student_port/db/functions/db_functions.dart';
 import 'package:student_port/db/model/data_model.dart';
+import 'package:student_port/db/model/enum_studetn.dart';
 import 'package:student_port/providers/student_provider.dart';
 import 'package:student_port/studentportal.dart';
 import 'package:student_port/widgets/listdetails.dart';
@@ -18,6 +17,9 @@ class StudentDetails extends StatelessWidget {
     this.email,
     this.phone,
     this.image,
+    this.id,
+    this.index,
+    required this.type,
   }) : super(key: key);
 
   final String? name;
@@ -25,8 +27,9 @@ class StudentDetails extends StatelessWidget {
   final String? email;
   final String? phone;
   final String? image;
-  // final String? name;
-
+  final String? id;
+  final int? index;
+  final Actiontype type;
   final studentName = TextEditingController();
 
   final _age = TextEditingController();
@@ -39,7 +42,22 @@ class StudentDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // editing screen switching
+
+    if (type == Actiontype.editScreen) {
+      studentName.text = name.toString();
+      _age.text = age.toString();
+      _email.text = email.toString();
+      _phoneNumber.text = phone.toString();
+    }
+    //////////////////////////////////////////////
+
     final imagePicker = Provider.of<StudentProvider>(context, listen: false);
+    //image in addscreen condition check.
+    if (type == Actiontype.addScreen) {
+      imagePicker.image == null;
+    }
+    /////////////////////////////////////////
     imagePicker.imageVisible = false;
     return Scaffold(
         appBar: AppBar(
@@ -48,7 +66,7 @@ class StudentDetails extends StatelessWidget {
             child: Text(
               'Add Student'.toUpperCase(),
               style: const TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontSize: 22,
                 fontWeight: FontWeight.w500,
               ),
@@ -61,7 +79,7 @@ class StudentDetails extends StatelessWidget {
           ],
           leading: IconButton(
               onPressed: () {
-                Navigator.of(context).push(
+                Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (context) {
                       return StudentPortal();
@@ -91,12 +109,22 @@ class StudentDetails extends StatelessWidget {
                           children: [
                             Consumer(
                               builder: (context, StudentProvider value, child) {
-                                return CircleAvatar(
-                                  radius: 75,
-                                  backgroundImage: FileImage(
-                                    File(value.image?.path ?? kImage),
-                                  ),
-                                );
+                                return type == Actiontype.editScreen
+                                    ? CircleAvatar(
+                                        radius: 75,
+                                        backgroundImage: FileImage(
+                                          File(value.image?.path ?? image!),
+                                        ),
+                                      )
+                                    : value.image == null
+                                        ? const CircleAvatar(
+                                            radius: 75,
+                                            backgroundImage: AssetImage(kImage))
+                                        : CircleAvatar(
+                                            radius: 75,
+                                            backgroundImage: FileImage(
+                                                File(value.image!.path)),
+                                          );
                               },
                             ),
                             Positioned(
@@ -116,6 +144,17 @@ class StudentDetails extends StatelessWidget {
                         ),
                       ),
                     ),
+                  ),
+                  Consumer<StudentProvider>(
+                    builder: (context, value, child) {
+                      return Visibility(
+                        visible: value.imageVisible,
+                        child: const Text(
+                          ' Add Image',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      );
+                    },
                   ),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.10,
@@ -211,13 +250,31 @@ class StudentDetails extends StatelessWidget {
                   kHeight,
                   ElevatedButton(
                     onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        studentSaveClicked(context);
-
-                        Navigator.of(context)
-                            .pushReplacement(MaterialPageRoute(builder: (ctx) {
-                          return StudentPortal();
-                        }));
+                      if (type == Actiontype.addScreen) {
+                        if (formKey.currentState!.validate() &&
+                            imagePicker.image != null) {
+                          studentSaveClicked(context);
+                          imagePicker.imageVisible = false;
+                        } else {
+                          if (imagePicker.image != null) {
+                            imagePicker.isVisible(imagePicker.image);
+                          } else {
+                            imagePicker.isVisible(imagePicker.image);
+                          }
+                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Successfully added'),
+                            behavior: SnackBarBehavior.floating,
+                            duration: Duration(seconds: 2),
+                            backgroundColor: Colors.blue,
+                          ),
+                        );
+                      } else {
+                        if (formKey.currentState!.validate()) {
+                          studentSaveClicked(context);
+                          imagePicker.imageVisible = false;
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -241,6 +298,7 @@ class StudentDetails extends StatelessWidget {
 
   Future<void> studentSaveClicked(BuildContext context) async {
     final imagePicker = Provider.of<StudentProvider>(context, listen: false);
+    final studentFunction = Provider.of<StudentDb>(context, listen: false);
 
     final displayName = studentName.text.trim();
     final displayAge = _age.text.trim();
@@ -254,13 +312,41 @@ class StudentDetails extends StatelessWidget {
       return;
     }
     final student = StudentModel(
-       photo: imagePicker.image?.path ?? kImage,
+        photo: imagePicker.image?.path ?? image.toString(),
         name: displayName,
         age: displayAge,
         phonenumber: displayNumber,
         email: displayEmail,
-        id: DateTime.now().microsecondsSinceEpoch.toString());
-    StudentDb().addStudent(student, context);
+        id: type == Actiontype.addScreen
+            ? DateTime.now().microsecondsSinceEpoch.toString()
+            : id.toString());
+    type == Actiontype.addScreen
+        ? studentFunction
+            .addStudent(student)
+            .then((value) => imagePicker.image = null)
+        : studentFunction
+            .updateStudent(index!.toInt(), student, context)
+            .then((value) => imagePicker.image = null);
+
+    if (type == Actiontype.editScreen) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => StudentPortal(),
+          ),
+          (route) => false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Successfully edited records'),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.blue,
+        ),
+      );
+    } else {
+      Provider.of<StudentProvider>(context, listen: false).getAllData(context);
+
+      Navigator.of(context).pop();
+    }
   }
 }
 

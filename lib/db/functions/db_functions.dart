@@ -3,26 +3,32 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/adapters.dart';
 
-
 import '../model/data_model.dart';
 
 //ValueNotifier<List<StudentModel>> studentlistNotifier = ValueNotifier([]);
 
-class StudentDb with ChangeNotifier{
+class StudentDb with ChangeNotifier {
+  static List<StudentModel> studentList = [];
 
- 
-   static List<StudentModel> studentList = [];
-
-  Future<void> addStudent(StudentModel value, context) async {
-    final studentDB = await Hive.openBox<StudentModel>('student_db');
-    await studentDB.put(value.id,value);
-    studentList.add(value);
-    log('student added');
-    getAllStudents(context);
+  Future<void> createDatabase() async {
+    await Hive.initFlutter();
+    if (!Hive.isAdapterRegistered(StudentModelAdapter().typeId)) {
+      Hive.registerAdapter(
+        StudentModelAdapter(),
+      );
+    }
+    notifyListeners();
   }
 
- static Future< List<StudentModel>> getAllStudents(BuildContext context) async {
-  
+  Future<void> addStudent(StudentModel value) async {
+    final studentDB = await Hive.openBox<StudentModel>('student_db');
+    await studentDB.put(value.id, value);
+    studentList.add(value);
+    log('student added');
+    getAllStudents();
+  }
+
+  static Future<List<StudentModel>> getAllStudents() async {
     final studentDB = await Hive.openBox<StudentModel>('student_db');
     studentList.clear();
     studentList.addAll(studentDB.values);
@@ -30,15 +36,15 @@ class StudentDb with ChangeNotifier{
     return studentList;
   }
 
-static  Future<void> deleteStudent(context, String index) async {
+  static Future<void> deleteStudent(context, String index) async {
     final studentDB = await Hive.openBox<StudentModel>('student_db');
     await studentDB.delete(index);
-    getAllStudents(context);
+    getAllStudents();
   }
 
-   Future<void> updateStudent(context,index,data)async{
+  Future<void> updateStudent(int id, StudentModel value, context) async {
     final studentDB = await Hive.openBox<StudentModel>('student_db');
-    await studentDB.putAt(index, data);
-     getAllStudents(context);
+    await studentDB.putAt(id, value);
+    getAllStudents();
   }
 }

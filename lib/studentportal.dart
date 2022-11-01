@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:student_port/db/functions/db_functions.dart';
-import 'package:student_port/db/model/enum_screen.dart';
+import 'package:student_port/core/constants.dart';
+import 'package:student_port/db/model/enum_studetn.dart';
 import 'package:student_port/list_student.dart';
 import 'package:student_port/providers/student_provider.dart';
 import 'package:student_port/student_details.dart';
@@ -15,23 +15,26 @@ class StudentPortal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   final studentProvider = Provider.of<StudentProvider>(context,listen:false );
-   WidgetsBinding.instance.addPostFrameCallback((_){
-     studentProvider.getAllData(context);
-   });
+    final studentProvider =
+        Provider.of<StudentProvider>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      studentProvider.getAllData(context);
+    });
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 239, 239, 241),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.read<StudentProvider>().image=null;
+          context.read<StudentProvider>().image = null;
           Navigator.of(context).push(MaterialPageRoute(builder: (ctx) {
-            return  StudentDetails();
+            return StudentDetails(
+              type: Actiontype.addScreen,
+            );
           }));
         },
         child: const Icon(Icons.person_add_alt_1_rounded),
       ),
       drawer: Drawer(
-        backgroundColor: const Color.fromARGB(255, 178, 186, 197),
+        backgroundColor:const  Color.fromARGB(200, 255, 255, 255),
         child: Column(
           children: [
             const SizedBox(
@@ -143,15 +146,14 @@ class StudentPortal extends StatelessWidget {
         title: Consumer<StudentProvider>(
           builder: (context, value, child) {
             return CupertinoSearchTextField(
-            itemColor: Colors.black,
-            backgroundColor: Colors.white,
-            controller: searchController,
-            onChanged: (value){
-          studentProvider.search(value);
-            },
-          );
+              itemColor: Colors.black,
+              backgroundColor: Colors.white,
+              controller: searchController,
+              onChanged: (value) {
+                studentProvider.search(value);
+              },
+            );
           },
-          
         ),
         backgroundColor: const Color.fromARGB(255, 228, 131, 245),
       ),
@@ -163,12 +165,13 @@ class StudentPortal extends StatelessWidget {
             ClipPath(
               clipper: ClipPathClass(),
               child: Container(
-                color:  const Color.fromARGB(255, 228, 131, 245),
+                color: const Color.fromARGB(255, 228, 131, 245),
                 height: 120,
                 width: double.infinity,
                 child: Row(
                   children: [
-                    Image.network( 'https://imgs.search.brave.com/bmuEQ0ev7KuH9Mujur1bD-dlGTwfKpzb4r_ypmvg3I4/rs:fit:676:450:1/g:ce/aHR0cHM6Ly9jZG5p/Lmljb25zY291dC5j/b20vaWxsdXN0cmF0/aW9uL3ByZW1pdW0v/dGh1bWIvc3R1ZGVu/dHMtc3R1ZHlpbmct/b25saW5lLTI5NzQ5/NDMtMjQ3NzM2OS5w/bmc'),
+                    Image.network(
+                        'https://imgs.search.brave.com/bmuEQ0ev7KuH9Mujur1bD-dlGTwfKpzb4r_ypmvg3I4/rs:fit:676:450:1/g:ce/aHR0cHM6Ly9jZG5p/Lmljb25zY291dC5j/b20vaWxsdXN0cmF0/aW9uL3ByZW1pdW0v/dGh1bWIvc3R1ZGVu/dHMtc3R1ZHlpbmct/b25saW5lLTI5NzQ5/NDMtMjQ3NzM2OS5w/bmc'),
                     Padding(
                       padding: const EdgeInsets.only(left: 20),
                       child: Column(
@@ -177,16 +180,16 @@ class StudentPortal extends StatelessWidget {
                           Text(
                             'Welcome ',
                             style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 3, 0, 187)
-                            ),
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 3, 0, 187)),
                           ),
                           Text(
                             'To E-Learning Hub',
-                            style: TextStyle(fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(240, 255, 255, 255), ),
-                            
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(240, 255, 255, 255),
+                            ),
                           ),
                         ],
                       ),
@@ -195,6 +198,24 @@ class StudentPortal extends StatelessWidget {
                 ),
               ),
             ),
+            kHeight,
+            Row(
+              children: const [
+                kWidth,
+                Icon(
+                  Icons.school,
+                ),
+                kWidth10,
+                Text(
+                  'E-Records',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            kHeight,
             const ListStudent(),
           ],
         ),
