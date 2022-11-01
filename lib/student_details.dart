@@ -160,6 +160,7 @@ class StudentDetails extends StatelessWidget {
                     height: MediaQuery.of(context).size.height * 0.10,
                   ),
                   ListDetails(
+                    keyboardType: TextInputType.name,
                     formValidator: (p0) {
                       if (p0!.isEmpty) {
                         return 'Please enter your name';
@@ -167,7 +168,6 @@ class StudentDetails extends StatelessWidget {
                         return null;
                       }
                     },
-                    keyboardType: TextInputType.name,
                     controller: studentName,
                     text: const Text(
                       'Name',
@@ -211,7 +211,7 @@ class StudentDetails extends StatelessWidget {
                         return null;
                       }
                     },
-                    keyboardType: TextInputType.emailAddress,
+                    keyboardType: TextInputType.name,
                     controller: _email,
                     text: const Text(
                       'Email',
@@ -262,17 +262,10 @@ class StudentDetails extends StatelessWidget {
                             imagePicker.isVisible(imagePicker.image);
                           }
                         }
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Successfully added'),
-                            behavior: SnackBarBehavior.floating,
-                            duration: Duration(seconds: 2),
-                            backgroundColor: Colors.blue,
-                          ),
-                        );
                       } else {
                         if (formKey.currentState!.validate()) {
                           studentSaveClicked(context);
+
                           imagePicker.imageVisible = false;
                         }
                       }
@@ -338,13 +331,20 @@ class StudentDetails extends StatelessWidget {
         const SnackBar(
           content: Text('Successfully edited records'),
           behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
+          duration: Duration(seconds: 1),
           backgroundColor: Colors.blue,
         ),
       );
     } else {
       Provider.of<StudentProvider>(context, listen: false).getAllData(context);
-
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Successfully added'),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 1),
+          backgroundColor: Colors.blue,
+        ),
+      );
       Navigator.of(context).pop();
     }
   }

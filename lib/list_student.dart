@@ -14,7 +14,11 @@ class ListStudent extends StatelessWidget {
       builder: (context, value, child) {
         return value.dataFound.isEmpty
             ? const Center(
-                child: Text('No Results Found'),
+                heightFactor: 20,
+                child: Text(
+                  'No Results Found!',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               )
             : ListView.separated(
                 physics: const NeverScrollableScrollPhysics(),
@@ -89,9 +93,9 @@ void onPressedDelete(BuildContext context, String index) {
                   .getAllData(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Successfully delted !'),
+                  content: Text('Successfully deleted !'),
                   behavior: SnackBarBehavior.floating,
-                  duration: Duration(seconds: 2),
+                  duration: Duration(seconds: 1),
                   backgroundColor: Colors.blue,
                 ),
               );
